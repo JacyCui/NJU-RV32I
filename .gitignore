@@ -3,4 +3,5 @@
 !*.c
 !*.mif
 !.gitignore
+!*.txt
 Makefile
