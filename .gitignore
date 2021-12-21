@@ -1,7 +1,10 @@
-*.*
+/*
 !*.v
 !*.c
 !*.mif
 !.gitignore
-!*.txt
+!vga_font.txt
+!*.qip
+db/*
+incremental_db/*
 Makefile
