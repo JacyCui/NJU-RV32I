@@ -43,10 +43,11 @@ int main() {
 					putch('\n');
 					exec_cmd(buffer, pos);
 				}
-				pos = 0; putch(c);
+				pos = 0;
 			}
-			else if (c == 8) { if (pos) pos--; }
-			else { buffer[pos++] = c; putch(c); }
+			else if (c == 8) { if (pos) pos--; else putch(20); }
+			else{ buffer[pos++] = c; }
+			putch(c);
 		}
 		c = getch();
     };

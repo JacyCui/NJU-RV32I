@@ -119,6 +119,11 @@ uint32_t a2u(const char* str, uint32_t begin) {
 }
 
 void u2a(char* dest, uint32_t src) {
+    if (!src) {
+	dest[0] = '0';
+	dest[1] = 0;
+	return;
+    }
     uint32_t size = 0;
     while (src) {
         dest[size++] = '0' + (src % 10);
