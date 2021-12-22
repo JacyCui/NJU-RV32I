@@ -47,13 +47,15 @@ module NJU_RV32I(
 
 
 	//////////// Reset //////////
-	wire rstclk, rstcpu, rstps2, rstvga;
+	wire rstclk, rstcpu, rstps2, rstvga, rsttime;
 	
 	assign rstclk = SW[0];
-	assign rstcpu = ~KEY[1];
-	assign rstps2 = KEY[0];
-	assign rstvga = SW[2];
-	assign rstfifo = SW[3];
+	assign rstvga = SW[1];
+	assign rstfifo = SW[2];
+	
+	assign rstcpu = ~KEY[0];
+	assign rstps2 = KEY[1];
+	assign rsttime = KEY[2];
 
 
 	//////////// 25MHz Clock //////////
@@ -93,23 +95,21 @@ module NJU_RV32I(
 		.dmemwe(cpuwe),
 		.dbgdata(dbgdata)
 	);
-	bcd7seg myseg0(dbgdata[3:0], HEX0);
-	bcd7seg myseg1(dbgdata[7:4], HEX1);
-	bcd7seg myseg2(dbgdata[11:8], HEX2);
-	bcd7seg myseg3(dbgdata[15:12], HEX3);
-
 
 	//////////// Main Memory //////////
 
 	wire dmemwren, smemwren;
 	assign dmemwren = cpuwe && vaddr[31:20] == 12'h001;
 	assign smemwren = cpuwe && vaddr[31:20] == 12'h002;
+	assign bcdwren = cpuwe && vaddr[31:20] == 12'h004;
+	assign ledwren = cpuwe && vaddr[31:20] == 12'h005;
 	
 	assign keyrden = vaddr[31:20] == 12'h003;
 	
 	wire [31:0] dmemdataout;
 	wire [7:0] keyascii;
-	assign cpudatain = vaddr[31:20] == 12'h003 ? {24'h0, keyascii} : dmemdataout;
+	wire [23:0] timereg;
+	assign cpudatain = vaddr[31:20] == 12'h003 ? {24'h0, keyascii} : (vaddr[31:20] == 12'h006 ? {8'h0, timereg} : dmemdataout);
 	
 	// Instruction Memory -- Starts With 0x000
 	irom myirom(
@@ -155,6 +155,27 @@ module NJU_RV32I(
     	.rst(rstfifo),
     	.dataout(keyascii)
 	);
+	
+	// BCD REG -- Starts With 0x004
+	reg[23:0] bcdreg;
+	always @(posedge cpuwrclk) begin
+		if (bcdwren) begin
+			bcdreg <= cpudataout[23:0];
+		end
+	end
+	
+	// LED REG -- Starts with 0x005
+	reg[7:0] ledreg;
+	always @(posedge cpuwrclk) begin
+		if (ledwren) begin
+			ledreg[vaddr[2:0]] <= cpudataout[0];
+		end
+	end
+	
+	// Time REG -- Starts with 0x006
+	
+	
+	
 
 	//////////// External Device //////////
 
@@ -182,12 +203,9 @@ module NJU_RV32I(
 		.shift(shift),
 		.asciicode(ascii_code)
 	);
-	
-	// debug
-	assign LEDR[2:0] = {ctrl, shift, capslock};
-	bcd7seg myseg4(ascii_code[3:0], HEX4);
-	bcd7seg myseg5(ascii_code[7:4], HEX5);
+	assign LEDR[9:8] = {capslock, shift};
 
+	
 	// VGA Screen
 	wire [23:0] vga_data;
 	wire [9:0] h_addr, v_addr;
@@ -216,5 +234,38 @@ module NJU_RV32I(
 		.rdaddr(smemrdaddr),
 		.vga_data(vga_data)
 	);
+	
+
+	// BCD SEG
+	bcd7seg myseg0(bcdreg[3:0], HEX0);
+	bcd7seg myseg1(bcdreg[7:4], HEX1);
+	bcd7seg myseg2(bcdreg[11:8], HEX2);
+	bcd7seg myseg3(bcdreg[15:12], HEX3);
+	bcd7seg myseg4(bcdreg[19:16], HEX4);
+	bcd7seg myseg5(bcdreg[23:20], HEX5);
+	
+	
+	// LED Light
+	assign LEDR[7:0] = ledreg[7:0];
+	
+	// CLOCK
+	wire clk1s, rco;
+	wire[3:0] h_t, h_o, m_t, m_o, s_t, s_o;
+	clk_1s myclk_1s(CLOCK_50, clk1s);
+	clock myclock(
+		.en(1'b1),
+		.clk(clk1s), 
+		.rst(rsttime),
+		.cin(24'd0),
+		.hour_t(h_t),
+		.hour_o(h_o),
+		.min_t(m_t),
+		.min_o(m_o),
+		.sec_t(s_t),
+		.sec_o(s_o),
+		.rco(rco)
+	);
+	assign timereg = {h_t, h_o, m_t, m_o, s_t, s_o};
+	
 
 endmodule
