@@ -39,3 +39,4 @@ void strncpy(char* dest, const char* src, uint32_t size);
 
 uint32_t a2u(const char* str, uint32_t begin);
 void u2a(char* dest, uint32_t src);
+

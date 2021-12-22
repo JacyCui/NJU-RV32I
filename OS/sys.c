@@ -6,15 +6,11 @@ uint32_t  vga_line = 0;
 uint32_t  vga_ch = 0;
 
 char* ps2 = (char*)PS2_START;
-
 uint32_t* bcd = (uint32_t*)BCD_START;
-
 uint8_t* led = (uint8_t*)LED_START;
-
 uint32_t* clock = (uint32_t*)CLOCK_START;
 
 char cmd[] = "cmd> ";
-
 
 void vga_init() {
     vga_line = 0;
@@ -45,50 +41,27 @@ void putch(char ch) {
     }
     vga_start[(vga_line << 6) + vga_ch] = ch;
     vga_ch++;
-    if (vga_ch >= VGA_MAXCOL) {
-        vga_line++;
-        vga_ch = 0;
-    }
-    if (vga_line >= VGA_MAXCOL) {
-	    vga_init();
-    }
+    if (vga_ch >= VGA_MAXCOL) { vga_line++; vga_ch = 0; }
+    if (vga_line >= VGA_MAXCOL) vga_init();
 }
 
-void putstr(const char* str){
-    for (const char* p = str; *p != 0; p++) putch(*p);
-}
+void putstr(const char* str){ for (const char* p = str; *p != 0; p++) putch(*p); }
 
-char getch() {
-    return *ps2;
-}
+char getch() { return *ps2; }
 
-void setline(uint32_t n) {
-	vga_line = n;
-}
+void setline(uint32_t n) { vga_line = n; }
 
-void initbcd() {
-	*bcd = 0;
-}
+void initbcd() { *bcd = 0; }
 
-void putbcd(uint32_t input) {
-	*bcd = input & 0x00ffffff;
-}
+void putbcd(uint32_t input) { *bcd = input & 0x00ffffff; }
 
-void initled() {
-	for (uint32_t i = 0; i < LED_NUM; i++) led[i] = 0;
-}
+void initled() { for (uint32_t i = 0; i < LED_NUM; i++) led[i] = 0; }
 
-void ledon(uint32_t input) {
-	led[input] = 1;
-}
+void ledon(uint32_t input) { led[input] = 1; }
 
-void ledoff(uint32_t input) {
-	led[input] = 0;
-}
+void ledoff(uint32_t input) { led[input] = 0; }
 
-uint32_t gettime() {
-	return *clock;
-}
+uint32_t gettime() { return *clock; }
 
 void puttime(uint32_t t) {
 	char tmp[MAX_LEN];

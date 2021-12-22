@@ -5,7 +5,6 @@ char err_unknown[] = "Unknown Command!";
 char err_argmiss[] = "Argument Missing Exception!"; 
 char err_argill[] = "Illegal Argument Exception!";
 char help_info[] = "hello\nfib n\ntime\nwhoami\necho str\nclear\nbcd n\nled on n\nled off n";
-
 char success[] = "Set Successfully!";
 
 char buffer[MAX_LEN];
@@ -27,10 +26,8 @@ int main() {
 	initled();
 	initbcd();
     char c = getch();
-    while (1) {
-        if (c) break;
-        c = getch();
-    } // start when any key is pressed
+    while (1) { if (c) break; c = getch(); }
+    // start when any key is pressed
 
     vga_init();
     putstr(hello);
@@ -39,107 +36,62 @@ int main() {
     pos = 0;
     c = getch();
     while (1) {
-	if (c) {
-		if (c == 13) {
-			if (pos) {
-            			buffer[pos] = 0;
-            			putch('\n');
-           	 		exec_cmd(buffer, pos);
+		if (c) {
+			if (c == 13) {
+				if (pos) {
+					buffer[pos] = 0;
+					putch('\n');
+					exec_cmd(buffer, pos);
+				}
+				pos = 0; putch(c);
 			}
-			pos = 0;
-        	}
-		else if (c == 8) {
-			if (pos) pos--;
+			else if (c == 8) { if (pos) pos--; }
+			else { buffer[pos++] = c; putch(c); }
 		}
-        	else {
-            		buffer[pos++] = c;
-        	}
-        	putch(c);
-	}
-	c = getch();
+		c = getch();
     };
     return 0;
 }
 
 void exec_cmd(const char* cmd, uint32_t size) {
-    if (!strcmp(cmd, "hello")) {
-        putstr(hello);
-        return;
-    }
-    if (!strcmp(cmd, "time")) {
-	    uint32_t t = gettime();
-	    puttime(t);
-	    return;
-    }
-    if (!strcmp(cmd, "clear")) {
-	    vga_init();
-	    setline(VGA_MAXLINE - 1);
-	    return;
-    }
-    if (!strcmp(cmd, "whoami")) {
-	    putstr("cuijiacai@nju:201220014");
-	    return;
-    }
-    if (!strcmp(cmd, "help")) {
-	    putstr(help_info);
-	    return;
-    }
+    if (!strcmp(cmd, "hello")) { putstr(hello); return; }
+    if (!strcmp(cmd, "time")) { puttime(gettime()); return; }
+    if (!strcmp(cmd, "clear")) { vga_init(); setline(VGA_MAXLINE - 1); return; }
+    if (!strcmp(cmd, "whoami")) { putstr("cuijiacai@nju:201220014"); return; }
+    if (!strcmp(cmd, "help")) { putstr(help_info); return; }
     if (size >= 3 && !strncmp(cmd, "bcd", 3)) {
-	    if (size == 3) {
-		    putstr(err_argmiss);
-		    return;
-	    }
-	    uint32_t n = a2u(cmd, 3);
-	    putbcd(n);
+	    if (size == 3) { putstr(err_argmiss); return; }
+	    putbcd(a2u(cmd, 3));
 	    putstr(success); 
 	    return;
     }
     if (size >= 6 && !strncmp(cmd, "led on", 6)) {
-	    if (size == 6) {
-		    putstr(err_argmiss);
-		    return;
-	    }
+	    if (size == 6) { putstr(err_argmiss); return; }
 	    uint32_t n = a2u(cmd, 3);
-	    if (n >= LED_NUM) {
-		    putstr(err_argill);
-		    return;
-	    }
+	    if (n >= LED_NUM) { putstr(err_argill); return; }
 	    ledon(n);
 	    putstr(success);
 	    return;
     }
     if (size >= 7 && !strncmp(cmd, "led off", 7)) {
-	    if (size == 7) {
-		    putstr(err_argmiss);
-		    return;
-	    }
+	    if (size == 7) { putstr(err_argmiss); return; }
 	    uint32_t n = a2u(cmd, 3);
-	    if (n >= LED_NUM) {
-		    putstr(err_argill);
-		    return;
-	    }
+	    if (n >= LED_NUM) { putstr(err_argill); return; }
 	    ledoff(n);
 	    putstr(success);
 	    return;
     }
     if (size >= 3 && !strncmp(cmd, "fib", 3)) {
-        if (size == 3) {
-		putstr(err_argmiss);
-		return;
-	}
-	uint32_t n = a2u(cmd, 3);
+        if (size == 3) { putstr(err_argmiss); return; }
+		uint32_t n = a2u(cmd, 3);
         char res[MAX_LEN];
         u2a(res, fib(n));
         putstr(res);
         return;
     }
     if (size >= 4 && !strncmp(cmd, "echo", 4)) {
-	    if (size == 4) {
-		    putstr(err_argmiss);
-		    return;
-	    }
-	    putstr(cmd + 5);
-	    return;
+	    if (size == 4) { putstr(err_argmiss); return; }
+	    putstr(cmd + 5); return;
     }
     putstr(err_unknown);
 }
