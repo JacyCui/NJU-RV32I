@@ -1,7 +1,8 @@
 #include "sys.h"
 
 
-char hello[]="Hello World!\n";
+char hello[]= "Hello World!\n";
+char cmd[] = "cmd> ";
 
 int main();
 
@@ -15,15 +16,18 @@ void entry()
 
 int main()
 {
+    char c = getch();
+    while (1) {
+        if (c) break;
+        c = getch();
+    }
     vga_init();
     putstr(hello);
 
-    char c = getch();
-
+    c = getch();
     while (1)
     {
-	    if (c)
-	    	putch(c);
+	    if (c) putch(c);
 	    c = getch();
     };
 
