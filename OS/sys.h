@@ -9,7 +9,7 @@
 #define LED_NUM 8
 #define CLOCK_START 0x00600000
 
-#define MAX_LEN 64
+#define MAX_LEN 128
 
 typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
@@ -39,4 +39,5 @@ void strncpy(char* dest, const char* src, uint32_t size);
 
 uint32_t a2u(const char* str, uint32_t begin);
 void u2a(char* dest, uint32_t src);
+void i2a(char* dest, int src);
 

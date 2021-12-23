@@ -2,7 +2,7 @@
 
 char hello[] = "Hello World!";
 char err_unknown[] = "Unknown Command!";
-char err_argmiss[] = "Argument Missing Exception!"; 
+char err_argmiss[] = "Argument Missing Exception!";
 char err_argill[] = "Illegal Argument Exception!";
 char help_info[] = "hello\nfib n\ntime\nwhoami\necho str\nclear\nbcd n\nled on n\nled off n";
 char success[] = "Set Successfully!";
@@ -13,6 +13,11 @@ uint32_t pos = 0;
 int main();
 void exec_cmd(const char* cmd, uint32_t size);
 uint32_t fib(uint32_t n);
+
+void insert_operand(int* operand, int* top_num, int num);
+void insert_oper (char * oper , int *top_oper , char ch);
+int compare(char* oper, int* top_oper, char ch);
+void deal_date(int* operand, char* oper, int* top_num, int* top_oper);
 
 
 //setup the entry point
@@ -91,8 +96,15 @@ void exec_cmd(const char* cmd, uint32_t size) {
         return;
     }
     if (size >= 4 && !strncmp(cmd, "echo", 4)) {
-	    if (size == 4) { putstr(err_argmiss); return; }
+	    if (size <= 5) { putstr(err_argmiss); return; }
 	    putstr(cmd + 5); return;
+    }
+    if (size >= 4 && !strncmp(cmd, "expr", 4)) {
+        if (size <= 5) { putstr(err_argmiss); return; }
+        char res[MAX_LEN];
+        i2a(res, expr(cmd + 5));
+        putstr(res);
+        return;
     }
     putstr(err_unknown);
 }
@@ -108,4 +120,63 @@ uint32_t fib(uint32_t n) {
     }
     return fib1;
 }
+
+int expr(const char* str) {
+    int operand[MAX_LEN] = {0};
+    int top_num = -1;
+    
+    char oper[MAX_LEN] = {0};
+    int top_oper = -1;
+
+    char* temp;
+    char dest[MAX_LEN];  
+
+    int num = 0, i = 0;  
+    
+    while(*str != '\0') {  
+        temp = dest;  
+        while(*str >= '0' && *str <= '9') *(temp++) = *(str++);
+        if(*str != '(' && *(temp - 1) != '\0') {
+            *temp = '\0';
+            num = a2u(dest, 0);
+            insert_operand(operand, &top_num, num);
+        }
+        while(1) {
+            i = compare(oper, &top_oper, *str);
+            if (i == 0) { insert_oper(oper, &top_oper, *str); break; }
+            if (i == 1) str++;
+            else deal_date(operand, oper, &top_num, &top_oper);  
+        }
+        str++;
+    }
+    return operand[0];
+}
+
+void insert_operand(int* operand, int* top_num, int num) { (*top_num) ++; operand[*top_num] = num; }  
+void insert_oper (char * oper , int *top_oper , char ch) { (*top_oper)++; oper[*top_oper] = ch; }  
+     
+int compare(char* oper, int* top_oper, char ch) {
+    if((oper[*top_oper] == '-' || oper[*top_oper] == '+') && (ch == '*' || ch == '/')) return 0;
+    if(*top_oper == -1 || ch == '('|| (oper[*top_oper] == '(' && ch != ')')) return 0;
+    if (oper[*top_oper] =='(' && ch == ')') { (*top_oper)--; return 1;}
+    return -1;
+}  
+
+void deal_date(int* operand, char* oper, int* top_num, int* top_oper) {
+    int num_1 = operand[*top_num];
+    int num_2 = operand[*top_num - 1];  
+    int value;
+    switch(oper[*top_oper]) {
+        case '+': value = num_1 + num_2; break;
+        case '-': value = num_2 - num_1; break;
+        case '*': value = num_2 * num_1; break;
+        case '/': value = num_2 / num_1; break;
+        default: value = 0; break;
+    }
+    (*top_num)--;
+    operand[*top_num] = value;
+    (*top_oper)--;
+}  
+
+
 

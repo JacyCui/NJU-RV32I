@@ -19,7 +19,6 @@ void vga_init() {
         for (int j = 0; j < VGA_MAXCOL; j++)
             vga_start[(i << 6) + j] = 0;
 }
-
 void putch(char ch) {
     if (ch == 8) { //backspace
         vga_ch--;
@@ -44,25 +43,18 @@ void putch(char ch) {
     if (vga_ch >= VGA_MAXCOL) { vga_line++; vga_ch = 0; }
     if (vga_line >= VGA_MAXCOL) vga_init();
 }
-
 void putstr(const char* str){ for (const char* p = str; *p != 0; p++) putch(*p); }
-
 char getch() { return *ps2; }
-
 void setline(uint32_t n) { vga_line = n; }
 
 void initbcd() { *bcd = 0; }
-
 void putbcd(uint32_t input) { *bcd = input & 0x00ffffff; }
 
 void initled() { for (uint32_t i = 0; i < LED_NUM; i++) led[i] = 0; }
-
 void ledon(uint32_t input) { led[input] = 1; }
-
 void ledoff(uint32_t input) { led[input] = 0; }
 
 uint32_t gettime() { return *clock; }
-
 void puttime(uint32_t t) {
 	char tmp[MAX_LEN];
 	u2a(tmp, t);
@@ -136,5 +128,13 @@ void u2a(char* dest, uint32_t src) {
         dest[i] = dest[j];
         dest[j] = tmp;
         i++; j--;
+    }
+}
+
+void i2a(char* dest, int src) {
+    if (src >= 0) u2a(dest, src);
+    else {
+        dest[0] = '-';
+        u2a(dest + 1, -src);
     }
 }
