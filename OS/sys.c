@@ -101,13 +101,18 @@ void strncpy(char* dest, const char* src, uint32_t size) {
     dest[i] = 0;
 }
 
-uint32_t a2u(const char* str, uint32_t begin) {
+uint32_t a2u(const char* str) {
     uint32_t len = strlen(str);
     uint32_t res = 0;
-    for (uint32_t i = begin; i < len; i++)
+    for (uint32_t i = 0; i < len; i++)
         if (str[i] >= '0' && str[i] <= '9')
             res = res * 10 + (str[i] - '0');
     return res;
+}
+
+int a2i(const char* str) {
+    if (str[0] == '-') return -(int)a2u(str + 1);
+    return a2u(str);
 }
 
 void u2a(char* dest, uint32_t src) {

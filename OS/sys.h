@@ -37,7 +37,8 @@ int strncmp(const char* str1, const char* str2, uint32_t size);
 void strcpy(char* dest, const char* src);
 void strncpy(char* dest, const char* src, uint32_t size);
 
-uint32_t a2u(const char* str, uint32_t begin);
+uint32_t a2u(const char* str);
+int a2i(const char* str);
 void u2a(char* dest, uint32_t src);
 void i2a(char* dest, int src);
 

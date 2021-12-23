@@ -4,7 +4,7 @@ char hello[] = "Hello World!";
 char err_unknown[] = "Unknown Command!";
 char err_argmiss[] = "Argument Missing Exception!";
 char err_argill[] = "Illegal Argument Exception!";
-char help_info[] = "hello\nfib n\ntime\nwhoami\necho str\nclear\nbcd n\nled on n\nled off n";
+char help_info[] = "hello\nfib n\ntime\nwhoami\necho str\nclear\nbcd n\nled on n\nled off n\nexpr str";
 char success[] = "Set Successfully!";
 
 char buffer[MAX_LEN];
@@ -14,6 +14,7 @@ int main();
 void exec_cmd(const char* cmd, uint32_t size);
 uint32_t fib(uint32_t n);
 
+int expr(const char* str);
 void insert_operand(int* operand, int* top_num, int num);
 void insert_oper (char * oper , int *top_oper , char ch);
 int compare(char* oper, int* top_oper, char ch);
@@ -67,13 +68,13 @@ void exec_cmd(const char* cmd, uint32_t size) {
     if (!strcmp(cmd, "help")) { putstr(help_info); return; }
     if (size >= 3 && !strncmp(cmd, "bcd", 3)) {
 	    if (size == 3) { putstr(err_argmiss); return; }
-	    putbcd(a2u(cmd, 3));
+	    putbcd(a2u(cmd + 3));
 	    putstr(success); 
 	    return;
     }
     if (size >= 6 && !strncmp(cmd, "led on", 6)) {
 	    if (size == 6) { putstr(err_argmiss); return; }
-	    uint32_t n = a2u(cmd, 3);
+	    uint32_t n = a2u(cmd + 6);
 	    if (n >= LED_NUM) { putstr(err_argill); return; }
 	    ledon(n);
 	    putstr(success);
@@ -81,7 +82,7 @@ void exec_cmd(const char* cmd, uint32_t size) {
     }
     if (size >= 7 && !strncmp(cmd, "led off", 7)) {
 	    if (size == 7) { putstr(err_argmiss); return; }
-	    uint32_t n = a2u(cmd, 3);
+	    uint32_t n = a2u(cmd + 7);
 	    if (n >= LED_NUM) { putstr(err_argill); return; }
 	    ledoff(n);
 	    putstr(success);
@@ -89,7 +90,7 @@ void exec_cmd(const char* cmd, uint32_t size) {
     }
     if (size >= 3 && !strncmp(cmd, "fib", 3)) {
         if (size == 3) { putstr(err_argmiss); return; }
-		uint32_t n = a2u(cmd, 3);
+		uint32_t n = a2u(cmd + 3);
         char res[MAX_LEN];
         u2a(res, fib(n));
         putstr(res);
@@ -122,10 +123,14 @@ uint32_t fib(uint32_t n) {
 }
 
 int expr(const char* str) {
-    int operand[MAX_LEN] = {0};
+    int operand[MAX_LEN];
+    char oper[MAX_LEN];
+    for (uint32_t i = 0; i < MAX_LEN; i++) {
+        operand[i] = 0;
+        oper[i] = 0;
+    }
+
     int top_num = -1;
-    
-    char oper[MAX_LEN] = {0};
     int top_oper = -1;
 
     char* temp;
@@ -138,10 +143,11 @@ int expr(const char* str) {
         while(*str >= '0' && *str <= '9') *(temp++) = *(str++);
         if(*str != '(' && *(temp - 1) != '\0') {
             *temp = '\0';
-            num = a2u(dest, 0);
+            num = a2i(dest);
             insert_operand(operand, &top_num, num);
         }
         while(1) {
+            if (top_oper == -1 && !*str) break;
             i = compare(oper, &top_oper, *str);
             if (i == 0) { insert_oper(oper, &top_oper, *str); break; }
             if (i == 1) str++;
@@ -153,11 +159,11 @@ int expr(const char* str) {
 }
 
 void insert_operand(int* operand, int* top_num, int num) { (*top_num) ++; operand[*top_num] = num; }  
-void insert_oper (char * oper , int *top_oper , char ch) { (*top_oper)++; oper[*top_oper] = ch; }  
+void insert_oper(char* oper , int *top_oper , char ch) { (*top_oper)++; oper[*top_oper] = ch; }  
      
 int compare(char* oper, int* top_oper, char ch) {
-    if((oper[*top_oper] == '-' || oper[*top_oper] == '+') && (ch == '*' || ch == '/')) return 0;
-    if(*top_oper == -1 || ch == '('|| (oper[*top_oper] == '(' && ch != ')')) return 0;
+    if ((oper[*top_oper] == '-' || oper[*top_oper] == '+') && (ch == '*' || ch == '/')) return 0;
+    if (*top_oper == -1 || ch == '('|| (oper[*top_oper] == '(' && ch != ')')) return 0;
     if (oper[*top_oper] =='(' && ch == ')') { (*top_oper)--; return 1;}
     return -1;
 }  
@@ -176,7 +182,7 @@ void deal_date(int* operand, char* oper, int* top_num, int* top_oper) {
     (*top_num)--;
     operand[*top_num] = value;
     (*top_oper)--;
-}  
+}
 
 
 
