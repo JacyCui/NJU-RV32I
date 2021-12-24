@@ -10,6 +10,20 @@
 
 本实验的目标是在`DE10-Standard`开发板的 FPGA 上实现一个简单的计算机系统，能够运行`RV32I`指令集，并处理一定量的输入输出。实验源码在https://gitee.com/cui-jiacai/nju-rv32-i仓库中，暂时私有，待课程结束后转为开源。
 
+项目目录结构(忽略不含源码的项目结构)如下：
+
+```mermaid
+graph TD
+	A((NJU-RV32I)) --- NJU_RV32I.v --- clkgen.v --- bcdseg.v
+	A --> B((CPU)) --- rv32is.v --- regfile.v --- alu.v --- contrgen.v --- branchcond.v --- immgen.v
+	A --> C((DMEM)) --- dmem.v --- ram2pben.v --- main_d.mif
+	A --> D((IMEM)) --- irom.v --- main.mif
+	A --> E((PS2)) --- keyboard.v --- ps2_keyboard.v --- fifo.v --- ascii_rom.v --- check_case.v --- scancode.mif
+	A --> F((VGA)) --- vga_ctrl.v --- loadscreen.v --- screen_ram.v --- initScreen.mif --- vga_font.txt
+	A --> G((CLOCK)) --- clock.v --- Counter.v --- Counter60.v --- clk_1s.v
+	A --> H((OS)) --- main.c --- sys.h --- sys.c --- mul.c --- Makefile
+```
+
 
 
 ## 2 硬件部分
