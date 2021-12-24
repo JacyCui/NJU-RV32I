@@ -12,17 +12,7 @@
 
 项目目录结构(忽略不含源码的项目结构)如下：
 
-```mermaid
-graph TD
-	A((NJU-RV32I)) --- NJU_RV32I.v --- clkgen.v --- bcdseg.v
-	A --> B((CPU)) --- rv32is.v --- regfile.v --- alu.v --- contrgen.v --- branchcond.v --- immgen.v
-	A --> C((DMEM)) --- dmem.v --- ram2pben.v --- main_d.mif
-	A --> D((IMEM)) --- irom.v --- main.mif
-	A --> E((PS2)) --- keyboard.v --- ps2_keyboard.v --- fifo.v --- ascii_rom.v --- check_case.v --- scancode.mif
-	A --> F((VGA)) --- vga_ctrl.v --- loadscreen.v --- screen_ram.v --- initScreen.mif --- vga_font.txt
-	A --> G((CLOCK)) --- clock.v --- Counter.v --- Counter60.v --- clk_1s.v
-	A --> H((OS)) --- main.c --- sys.h --- sys.c --- mul.c --- Makefile
-```
+[![](https://mermaid.ink/img/eyJjb2RlIjoiZ3JhcGggVERcblx0QSgoTkpVLVJWMzJJKSkgLS0tIE5KVV9SVjMySS52IC0tLSBjbGtnZW4udiAtLS0gYmNkc2VnLnZcblx0QSAtLT4gQigoQ1BVKSkgLS0tIHJ2MzJpcy52IC0tLSByZWdmaWxlLnYgLS0tIGFsdS52IC0tLSBjb250cmdlbi52IC0tLSBicmFuY2hjb25kLnYgLS0tIGltbWdlbi52XG5cdEEgLS0-IEMoKERNRU0pKSAtLS0gZG1lbS52IC0tLSByYW0ycGJlbi52IC0tLSBtYWluX2QubWlmXG5cdEEgLS0-IEQoKElNRU0pKSAtLS0gaXJvbS52IC0tLSBtYWluLm1pZlxuXHRBIC0tPiBFKChQUzIpKSAtLS0ga2V5Ym9hcmQudiAtLS0gcHMyX2tleWJvYXJkLnYgLS0tIGZpZm8udiAtLS0gYXNjaWlfcm9tLnYgLS0tIGNoZWNrX2Nhc2UudiAtLS0gc2NhbmNvZGUubWlmXG5cdEEgLS0-IEYoKFZHQSkpIC0tLSB2Z2FfY3RybC52IC0tLSBsb2Fkc2NyZWVuLnYgLS0tIHNjcmVlbl9yYW0udiAtLS0gaW5pdFNjcmVlbi5taWYgLS0tIHZnYV9mb250LnR4dFxuXHRBIC0tPiBHKChDTE9DSykpIC0tLSBjbG9jay52IC0tLSBDb3VudGVyLnYgLS0tIENvdW50ZXI2MC52IC0tLSBjbGtfMXMudlxuXHRBIC0tPiBIKChPUykpIC0tLSBtYWluLmMgLS0tIHN5cy5oIC0tLSBzeXMuYyAtLS0gbXVsLmMgLS0tIE1ha2VmaWxlIiwibWVybWFpZCI6eyJ0aGVtZSI6ImRlZmF1bHQifSwidXBkYXRlRWRpdG9yIjpmYWxzZSwiYXV0b1N5bmMiOnRydWUsInVwZGF0ZURpYWdyYW0iOmZhbHNlfQ)](https://mermaid-js.github.io/mermaid-live-editor/edit/#eyJjb2RlIjoiZ3JhcGggVERcblx0QSgoTkpVLVJWMzJJKSkgLS0tIE5KVV9SVjMySS52IC0tLSBjbGtnZW4udiAtLS0gYmNkc2VnLnZcblx0QSAtLT4gQigoQ1BVKSkgLS0tIHJ2MzJpcy52IC0tLSByZWdmaWxlLnYgLS0tIGFsdS52IC0tLSBjb250cmdlbi52IC0tLSBicmFuY2hjb25kLnYgLS0tIGltbWdlbi52XG5cdEEgLS0-IEMoKERNRU0pKSAtLS0gZG1lbS52IC0tLSByYW0ycGJlbi52IC0tLSBtYWluX2QubWlmXG5cdEEgLS0-IEQoKElNRU0pKSAtLS0gaXJvbS52IC0tLSBtYWluLm1pZlxuXHRBIC0tPiBFKChQUzIpKSAtLS0ga2V5Ym9hcmQudiAtLS0gcHMyX2tleWJvYXJkLnYgLS0tIGZpZm8udiAtLS0gYXNjaWlfcm9tLnYgLS0tIGNoZWNrX2Nhc2UudiAtLS0gc2NhbmNvZGUubWlmXG5cdEEgLS0-IEYoKFZHQSkpIC0tLSB2Z2FfY3RybC52IC0tLSBsb2Fkc2NyZWVuLnYgLS0tIHNjcmVlbl9yYW0udiAtLS0gaW5pdFNjcmVlbi5taWYgLS0tIHZnYV9mb250LnR4dFxuXHRBIC0tPiBHKChDTE9DSykpIC0tLSBjbG9jay52IC0tLSBDb3VudGVyLnYgLS0tIENvdW50ZXI2MC52IC0tLSBjbGtfMXMudlxuXHRBIC0tPiBIKChPUykpIC0tLSBtYWluLmMgLS0tIHN5cy5oIC0tLSBzeXMuYyAtLS0gbXVsLmMgLS0tIE1ha2VmaWxlIiwibWVybWFpZCI6IntcbiAgXCJ0aGVtZVwiOiBcImRlZmF1bHRcIlxufSIsInVwZGF0ZUVkaXRvciI6ZmFsc2UsImF1dG9TeW5jIjp0cnVlLCJ1cGRhdGVEaWFncmFtIjpmYWxzZX0)
 
 
 
